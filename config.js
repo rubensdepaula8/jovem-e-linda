@@ -24,7 +24,7 @@ const DEFAULT_CONFIG = {
   // Textos exibidos no cabeçalho
   SALON_NAME:     "Jovem e Linda",
   SALON_SUBTITLE: "ESTÚDIO",
-  SALON_EXTRA:    "✂ UNISSEX",
+  SALON_EXTRA:    "",
 };
 
 // Senha do admin como hash SHA-256
