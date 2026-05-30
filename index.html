@@ -16,8 +16,11 @@
 <!-- ===== SPLASH SCREEN ===== -->
 <div id="splash" class="splash">
   <div class="splash-logo">
-    <div class="splash-emblem">JL</div>
-    <div class="splash-scissors">✂</div>
+    <img src="logo.png" alt="Logo Estúdio Jovem e Linda" class="logo-img-large" onerror="this.style.display='none'; document.getElementById('splash-fallback').style.display='flex';" />
+    <div id="splash-fallback" class="splash-fallback-box" style="display:none;">
+      <div class="splash-emblem">JL</div>
+      <div class="splash-scissors">✂</div>
+    </div>
   </div>
   <h1 class="splash-name">Estúdio Jovem e Linda</h1>
   <p class="splash-sub">UNISSEX</p>
@@ -29,12 +32,12 @@
 
   <!-- HEADER -->
   <header class="app-header">
-    <div class="header-logo">
-      <div class="logo-emblem">JL</div>
+    <div class="header-logo" id="header-logo-container">
+      <img id="header-logo-img" src="logo-izabel.png" alt="Logo" class="logo-img-small" onerror="this.src='logo-izabel.png';" />
       <div class="logo-text">
-        <span class="logo-studio">ESTÚDIO</span>
-        <span class="logo-name">Jovem e Linda</span>
-        <span class="logo-unissex">✂ UNISSEX</span>
+        <span class="logo-studio" id="header-logo-sub">ESTÚDIO</span>
+        <span class="logo-name" id="header-logo-title">Jovem e Linda</span>
+        <span class="logo-unissex" id="header-logo-extra">✂ UNISSEX</span>
       </div>
     </div>
     <button class="btn-admin-access" id="btn-admin-header" onclick="openAdminLogin()">⚙</button>

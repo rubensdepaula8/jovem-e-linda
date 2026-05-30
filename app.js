@@ -99,6 +99,24 @@ function selectProfessional(id) {
   document.querySelectorAll(".pro-card").forEach(c => c.classList.remove("selected"));
   document.getElementById(`pro-card-${id}`).classList.add("selected");
 
+  // Dynamic Header Update based on selection
+  const headerImg = document.getElementById("header-logo-img");
+  const headerSub = document.getElementById("header-logo-sub");
+  const headerTitle = document.getElementById("header-logo-title");
+  const headerExtra = document.getElementById("header-logo-extra");
+
+  if (id === "pro-1") {
+    if (headerImg) headerImg.src = "logo-izabel.png";
+    if (headerSub) headerSub.textContent = "ESTÚDIO";
+    if (headerTitle) headerTitle.textContent = "Jovem e Linda";
+    if (headerExtra) headerExtra.textContent = "✂ UNISSEX";
+  } else if (id === "pro-2") {
+    if (headerImg) headerImg.src = "logo-emanuel.png";
+    if (headerSub) headerSub.textContent = "BARBEARIA";
+    if (headerTitle) headerTitle.textContent = "Marverick";
+    if (headerExtra) headerExtra.textContent = "💈 BARBER SHOP";
+  }
+
   setTimeout(() => goToStep(2), 280);
 }
 
@@ -436,6 +454,16 @@ function startNewBooking() {
   state.date = null;
   state.time = null;
   state.step = 1;
+
+  // Reset header to default Jovem e Linda
+  const headerImg = document.getElementById("header-logo-img");
+  const headerSub = document.getElementById("header-logo-sub");
+  const headerTitle = document.getElementById("header-logo-title");
+  const headerExtra = document.getElementById("header-logo-extra");
+  if (headerImg) headerImg.src = "logo-izabel.png";
+  if (headerSub) headerSub.textContent = "ESTÚDIO";
+  if (headerTitle) headerTitle.textContent = "Jovem e Linda";
+  if (headerExtra) headerExtra.textContent = "✂ UNISSEX";
 
   document.getElementById("step-indicator").style.display = "";
   document.querySelectorAll(".step-panel").forEach(p => p.classList.remove("active"));
