@@ -18,26 +18,18 @@ const DEFAULT_DATA = {
   professionals: [
     {
       id: "pro-1",
-      name: "Juliana Costa",
-      role: "Cabeleireira & Colorista",
+      name: "Izabel",
+      role: "Cabeleireira",
       emoji: "💇‍♀️",
       color: "#e8a0b0",
       active: true
     },
     {
       id: "pro-2",
-      name: "Lucas Mendes",
-      role: "Barbeiro & Hair Designer",
+      name: "Emanuel",
+      role: "Barbeiro",
       emoji: "✂️",
       color: "#c9a96e",
-      active: true
-    },
-    {
-      id: "pro-3",
-      name: "Fernanda Alves",
-      role: "Esteticista & Manicure",
-      emoji: "💅",
-      color: "#c87de8",
       active: true
     }
   ],
