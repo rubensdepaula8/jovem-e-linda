@@ -90,7 +90,7 @@ function renderAdminAgenda() {
             ${b.clientName} ${statusBadge}
           </div>
           <div class="admin-booking-details">
-            ${b.serviceName} · ${durStr} · R$ ${b.price} · ${b.professionalName}
+            ${b.serviceName} · ${durStr} · <strong style="color:var(--gold);cursor:pointer" onclick="editBookingPrice('${b.id}')" title="Editar valor do agendamento">R$ ${b.price} ✏️</strong> · ${b.professionalName}
             ${!document.getElementById("admin-date-filter")?.value ? ` · ${dateStr}` : ''}
             ${b.clientPhone ? ` · <a href="https://wa.me/${b.clientPhone.replace(/\D/g,'')}" target="_blank" style="color:var(--gold);text-decoration:none">📱 ${b.clientPhone}</a>` : ''}
             ${b.notes ? `<br>📝 ${b.notes}` : ''}
@@ -106,6 +106,22 @@ function renderAdminAgenda() {
         </div>
       </div>`;
   }).join("");
+}
+
+function editBookingPrice(id) {
+  const b = DB.bookings.find(x => x.id === id);
+  if (!b) return;
+  const newPrice = prompt(`Editar valor do agendamento de ${b.clientName}:\nServiço: ${b.serviceName}`, b.price);
+  if (newPrice === null) return;
+  const parsed = parseFloat(newPrice);
+  if (isNaN(parsed) || parsed < 0) {
+    showToast("Valor inválido!", "error");
+    return;
+  }
+  b.price = parsed;
+  saveData(DB);
+  renderAdminAgenda();
+  showToast("Valor do agendamento atualizado!", "success");
 }
 
 function updateBookingStatus(id, status) {
