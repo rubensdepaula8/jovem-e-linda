@@ -1,17 +1,13 @@
 {
   "name": "Estúdio Jovem e Linda",
   "short_name": "Jovem e Linda",
-  "description": "Agendamento online do Estúdio Jovem e Linda Unissex",
-  "start_url": "./",
+  "description": "Agendamento online – Estúdio Jovem e Linda Unissex",
+  "start_url": "/jovem-e-linda/",
   "display": "standalone",
-  "background_color": "#0c0b0b",
-  "theme_color": "#111111",
+  "background_color": "#0e0e0e",
+  "theme_color": "#c9a96e",
+  "orientation": "portrait",
   "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
   ]
 }

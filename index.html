@@ -1,239 +1,255 @@
 <!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Estúdio Jovem e Linda – Agendamento Online</title>
-  <meta name="description" content="Agende seu horário no Estúdio Jovem e Linda Unissex de forma rápida pelo celular." />
-  <meta name="theme-color" content="#111111" />
-  <link rel="manifest" href="manifest.json" />
-  <link rel="icon" href="icon.svg" type="image/svg+xml" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Estúdio Jovem e Linda – Agendamento Online</title>
+<meta name="description" content="Agende seu horário no Estúdio Jovem e Linda Unissex de forma rápida pelo celular."/>
+<meta name="theme-color" content="#111111"/>
+<link rel="manifest" href="manifest.json"/>
+<link rel="icon" href="icon.svg" type="image/svg+xml"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+<style>
+  .logo-img       { width:150px;height:150px;object-fit:contain;display:block;margin:0 auto 4px;filter:drop-shadow(0 4px 18px rgba(201,169,110,.4)) }
+  .logo-img-sm    { width:48px;height:48px;object-fit:contain;display:block;filter:drop-shadow(0 2px 6px rgba(201,169,110,.3)) }
+  .brand-row      { display:flex;flex-direction:column;align-items:center;gap:6px }
+  .brand-row.compact { flex-direction:row;align-items:center;gap:10px }
+  /* hide the text-only brand-mark when logo loads */
+  .has-logo .brand-mark { display:none!important }
+</style>
 </head>
 <body>
-  <div id="splash" class="splash" aria-hidden="true">
-    <div class="brand-mark brand-mark-lg">JL</div>
-    <p>Preparando seu agendamento...</p>
-  </div>
 
-  <main id="app" class="app hidden">
-    <header class="hero">
-      <button class="admin-shortcut" type="button" onclick="openAdminLogin()" aria-label="Abrir painel administrativo">⚙</button>
-      <div class="brand-row">
-        <div class="brand-mark">JL</div>
-        <div>
-          <span class="eyebrow" id="header-subtitle">ESTÚDIO</span>
-          <h1 id="header-title">Jovem e Linda</h1>
-          <p id="header-extra">✂ UNISSEX</p>
-        </div>
-      </div>
-      <p class="hero-copy">Escolha o profissional, o serviço e o melhor horário para você.</p>
-    </header>
+<div id="splash" class="splash" aria-hidden="true">
+  <img id="splash-logo" class="logo-img" src="logo.png" alt="Estúdio Jovem e Linda" onerror="this.style.display='none'"/>
+  <div id="splash-jl" class="brand-mark brand-mark-lg" style="display:none">JL</div>
+  <p>Preparando seu agendamento...</p>
+</div>
 
-    <nav class="steps" id="step-indicator" aria-label="Etapas do agendamento">
-      <button class="step active" data-step="1" type="button" onclick="goToStep(1)"><span>1</span>Profissional</button>
-      <div class="step-line"></div>
-      <button class="step" data-step="2" type="button" onclick="goToStep(2)"><span>2</span>Serviço</button>
-      <div class="step-line"></div>
-      <button class="step" data-step="3" type="button" onclick="goToStep(3)"><span>3</span>Data & Hora</button>
-      <div class="step-line"></div>
-      <button class="step" data-step="4" type="button" onclick="goToStep(4)"><span>4</span>Seus Dados</button>
-    </nav>
+<main id="app" class="app hidden">
+  <header class="hero">
+    <button class="admin-shortcut" type="button" onclick="openAdminLogin()" aria-label="Abrir painel administrativo">⚙</button>
+    <div class="brand-row" id="header-brand">
+      <img id="header-logo" class="logo-img" src="logo.png" alt="Estúdio Jovem e Linda Unissex" onerror="this.style.display='none';document.getElementById('header-jl').style.display='flex'"/>
+      <div id="header-jl" class="brand-mark" style="display:none">JL</div>
+      <div>
+        <span class="eyebrow" id="header-subtitle">ESTÚDIO</span>
+        <h1 id="header-title">Jovem e Linda</h1>
+        <p id="header-extra">✂ UNISSEX</p>
+      </div>
+    </div>
+    <p class="hero-copy">Escolha o profissional, o serviço e o melhor horário para você.</p>
+  </header>
 
-    <section class="card step-panel active" id="panel-1">
-      <div class="panel-header">
-        <p class="eyebrow">Passo 1</p>
-        <h2>Escolha seu <span>profissional</span></h2>
-        <p>Todos especializados para deixar você incrível.</p>
-      </div>
-      <div class="professionals-grid" id="professionals-grid"></div>
-    </section>
+  <nav class="steps" id="step-indicator" aria-label="Etapas do agendamento">
+    <button class="step active" data-step="1" type="button" onclick="goToStep(1)"><span>1</span>Profissional</button>
+    <div class="step-line"></div>
+    <button class="step" data-step="2" type="button" onclick="goToStep(2)"><span>2</span>Serviço</button>
+    <div class="step-line"></div>
+    <button class="step" data-step="3" type="button" onclick="goToStep(3)"><span>3</span>Data & Hora</button>
+    <div class="step-line"></div>
+    <button class="step" data-step="4" type="button" onclick="goToStep(4)"><span>4</span>Seus Dados</button>
+  </nav>
 
-    <section class="card step-panel" id="panel-2">
-      <button class="btn-back" type="button" onclick="goToStep(1)">← Voltar</button>
-      <div class="panel-header">
-        <p class="eyebrow">Passo 2</p>
-        <h2>Escolha o <span>serviço</span></h2>
-        <p>Com <strong id="selected-pro-name-s2"></strong></p>
-      </div>
-      <div id="services-list" class="services-list"></div>
-    </section>
+  <section class="card step-panel active" id="panel-1">
+    <div class="panel-header">
+      <p class="eyebrow">Passo 1</p>
+      <h2>Escolha seu <span>profissional</span></h2>
+      <p>Todos especializados para deixar você incrível.</p>
+    </div>
+    <div class="professionals-grid" id="professionals-grid"></div>
+  </section>
 
-    <section class="card step-panel" id="panel-3">
-      <button class="btn-back" type="button" onclick="goToStep(2)">← Voltar</button>
-      <div class="panel-header">
-        <p class="eyebrow">Passo 3</p>
-        <h2>Escolha <span>data & horário</span></h2>
-        <p id="datetime-subtitle"></p>
-      </div>
-      <div class="calendar-box">
-        <div class="calendar-top">
-          <button class="cal-nav-btn" type="button" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</button>
-          <strong id="cal-month-label"></strong>
-          <button class="cal-nav-btn" type="button" onclick="changeMonth(1)" aria-label="Próximo mês">›</button>
-        </div>
-        <div class="calendar-grid" id="calendar-grid"></div>
-      </div>
-      <div class="time-slots-container" id="time-slots-container">
-        <p class="muted">← Selecione uma data para ver os horários</p>
-      </div>
-    </section>
+  <section class="card step-panel" id="panel-2">
+    <button class="btn-back" type="button" onclick="goToStep(1)">← Voltar</button>
+    <div class="panel-header">
+      <p class="eyebrow">Passo 2</p>
+      <h2>Escolha o <span>serviço</span></h2>
+      <p>Com <strong id="selected-pro-name-s2"></strong></p>
+    </div>
+    <div id="services-list" class="services-list"></div>
+  </section>
 
-    <section class="card step-panel" id="panel-4">
-      <button class="btn-back" type="button" onclick="goToStep(3)">← Voltar</button>
-      <div class="panel-header">
-        <p class="eyebrow">Passo 4</p>
-        <h2>Seus <span>dados</span></h2>
-        <p>Quase lá! Só mais um passo ✨</p>
+  <section class="card step-panel" id="panel-3">
+    <button class="btn-back" type="button" onclick="goToStep(2)">← Voltar</button>
+    <div class="panel-header">
+      <p class="eyebrow">Passo 3</p>
+      <h2>Escolha <span>data & horário</span></h2>
+      <p id="datetime-subtitle"></p>
+    </div>
+    <div class="calendar-box">
+      <div class="calendar-top">
+        <button class="cal-nav-btn" type="button" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</button>
+        <strong id="cal-month-label"></strong>
+        <button class="cal-nav-btn" type="button" onclick="changeMonth(1)" aria-label="Próximo mês">›</button>
       </div>
-      <div class="booking-summary-mini" id="booking-summary-mini"></div>
-      <form class="client-form" id="client-form" onsubmit="confirmBooking(event)">
-        <label>Seu nome completo
-          <input type="text" id="client-name" placeholder="Ex: Maria Silva" autocomplete="name" required />
-        </label>
-        <label>WhatsApp
-          <input type="tel" id="client-phone" placeholder="Ex: 83 99999-9999" autocomplete="tel" required />
-        </label>
-        <label>Observações <small>(opcional)</small>
-          <textarea id="client-notes" rows="3" placeholder="Ex: prefiro atendimento rápido, tenho alergia, etc."></textarea>
-        </label>
-        <button class="btn-primary" type="submit">Confirmar Agendamento ✓</button>
-      </form>
-    </section>
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
+    <div class="time-slots-container" id="time-slots-container">
+      <p class="muted">← Selecione uma data para ver os horários</p>
+    </div>
+  </section>
 
-    <section class="card step-panel confirm-panel" id="panel-confirm">
-      <div class="success-icon">✓</div>
-      <h2>Agendamento Confirmado!</h2>
-      <p>Até logo, <strong id="confirm-client-name"></strong>!</p>
-      <div id="confirm-details" class="confirm-details"></div>
-      <div class="confirm-actions">
-        <button class="btn-whatsapp" type="button" onclick="sendWhatsapp()">Avisar pelo WhatsApp</button>
-        <button class="btn-secondary" type="button" onclick="startNewBooking()">+ Novo Agendamento</button>
-      </div>
-      <p class="warning" id="whatsapp-warning"></p>
-    </section>
-  </main>
-
-  <div id="admin-login-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
-    <div class="modal-box">
-      <button class="modal-close" type="button" onclick="closeAdminLogin()" aria-label="Fechar">×</button>
-      <div class="brand-mark small">JL</div>
-      <h3 id="admin-login-title">Acesso Administrativo</h3>
-      <p class="muted">Digite a senha do painel.</p>
-      <label>Senha
-        <input type="password" id="admin-password" onkeydown="if(event.key==='Enter') loginAdmin()" />
+  <section class="card step-panel" id="panel-4">
+    <button class="btn-back" type="button" onclick="goToStep(3)">← Voltar</button>
+    <div class="panel-header">
+      <p class="eyebrow">Passo 4</p>
+      <h2>Seus <span>dados</span></h2>
+      <p>Quase lá! Só mais um passo ✨</p>
+    </div>
+    <div class="booking-summary-mini" id="booking-summary-mini"></div>
+    <div class="client-form" id="client-form-wrapper">
+      <label>Seu nome completo
+        <input type="text" id="client-name" placeholder="Ex: Maria Silva" autocomplete="name" required/>
       </label>
-      <p class="form-error hidden" id="admin-error">Senha incorreta. Tente novamente.</p>
-      <button class="btn-primary full" type="button" onclick="loginAdmin()">Entrar</button>
+      <label>WhatsApp
+        <input type="tel" id="client-phone" placeholder="Ex: 83 99999-9999" autocomplete="tel" required/>
+      </label>
+      <label>Observações <small>(opcional)</small>
+        <textarea id="client-notes" rows="3" placeholder="Ex: prefiro atendimento rápido, tenho alergia, etc."></textarea>
+      </label>
+      <button class="btn-primary" type="button" onclick="confirmBooking()">Confirmar Agendamento ✓</button>
     </div>
+  </section>
+
+  <section class="card step-panel confirm-panel" id="panel-confirm">
+    <div class="success-icon">✓</div>
+    <h2>Agendamento Confirmado!</h2>
+    <p>Até logo, <strong id="confirm-client-name"></strong>!</p>
+    <div id="confirm-details" class="confirm-details"></div>
+    <div class="confirm-actions">
+      <button class="btn-whatsapp" type="button" onclick="sendWhatsapp()">Avisar pelo WhatsApp</button>
+      <button class="btn-secondary" type="button" onclick="startNewBooking()">+ Novo Agendamento</button>
+    </div>
+    <p class="warning" id="whatsapp-warning"></p>
+  </section>
+</main>
+
+<!-- Admin Login Modal -->
+<div id="admin-login-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+  <div class="modal-box">
+    <button class="modal-close" type="button" onclick="closeAdminLogin()" aria-label="Fechar">×</button>
+    <img class="logo-img-sm" src="logo.png" alt="JL" style="margin:0 auto 12px" onerror="this.outerHTML='<div class=&quot;brand-mark small&quot;>JL</div>'"/>
+    <h3 id="admin-login-title">Acesso Administrativo</h3>
+    <p class="muted">Digite a senha do painel.</p>
+    <label>Senha
+      <input type="password" id="admin-password" onkeydown="if(event.key==='Enter') loginAdmin()"/>
+    </label>
+    <p class="form-error hidden" id="admin-error">Senha incorreta. Tente novamente.</p>
+    <button class="btn-primary full" type="button" onclick="loginAdmin()">Entrar</button>
+  </div>
+</div>
+
+<!-- Admin Panel -->
+<aside id="admin-panel" class="admin-panel hidden" aria-label="Painel administrativo">
+  <div class="admin-header">
+    <div class="brand-row compact">
+      <img class="logo-img-sm" src="logo.png" alt="JL" onerror="this.outerHTML='<div class=&quot;brand-mark small&quot;>JL</div>'"/>
+      <h2>Painel Admin</h2>
+    </div>
+    <button class="btn-secondary" type="button" onclick="closeAdmin()">× Sair</button>
+  </div>
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="tab-agenda" type="button" onclick="switchAdminTab('agenda')">Agenda</button>
+    <button class="admin-tab" id="tab-profissionais" type="button" onclick="switchAdminTab('profissionais')">Profissionais</button>
+    <button class="admin-tab" id="tab-servicos" type="button" onclick="switchAdminTab('servicos')">Serviços</button>
+    <button class="admin-tab" id="tab-config" type="button" onclick="switchAdminTab('config')">Config</button>
   </div>
 
-  <aside id="admin-panel" class="admin-panel hidden" aria-label="Painel administrativo">
-    <div class="admin-header">
-      <div class="brand-row compact"><div class="brand-mark small">JL</div><h2>Painel Admin</h2></div>
-      <button class="btn-secondary" type="button" onclick="closeAdmin()">× Sair</button>
-    </div>
-
-    <div class="admin-tabs">
-      <button class="admin-tab active" id="tab-agenda" type="button" onclick="switchAdminTab('agenda')">Agenda</button>
-      <button class="admin-tab" id="tab-profissionais" type="button" onclick="switchAdminTab('profissionais')">Profissionais</button>
-      <button class="admin-tab" id="tab-servicos" type="button" onclick="switchAdminTab('servicos')">Serviços</button>
-      <button class="admin-tab" id="tab-config" type="button" onclick="switchAdminTab('config')">Config</button>
-    </div>
-
-    <section class="admin-content active" id="admin-agenda">
-      <div class="admin-section-header">
-        <h3>Agendamentos</h3>
-        <div class="agenda-filters">
-          <input type="date" id="admin-date-filter" onchange="renderAdminAgenda()" />
-          <select id="admin-pro-filter" onchange="renderAdminAgenda()"></select>
-          <button type="button" class="btn-secondary" onclick="exportBookingsCSV()">Exportar CSV</button>
-        </div>
+  <section class="admin-content active" id="admin-agenda">
+    <div class="admin-section-header">
+      <h3>Agendamentos</h3>
+      <div class="agenda-filters">
+        <input type="date" id="admin-date-filter" onchange="renderAdminAgenda()"/>
+        <select id="admin-pro-filter" onchange="renderAdminAgenda()"></select>
+        <button type="button" class="btn-secondary" onclick="exportBookingsCSV()">Exportar CSV</button>
       </div>
-      <div id="admin-agenda-list" class="admin-list"></div>
-    </section>
+    </div>
+    <div id="admin-agenda-list" class="admin-list"></div>
+  </section>
 
-    <section class="admin-content" id="admin-profissionais">
-      <div class="admin-section-header"><h3>Profissionais</h3></div>
-      <form class="admin-form" onsubmit="saveProfessional(event)">
-        <input type="hidden" id="pro-id" />
-        <input id="pro-name" placeholder="Nome" required />
-        <input id="pro-role" placeholder="Especialidade" required />
-        <input id="pro-emoji" placeholder="Emoji ou iniciais" maxlength="4" />
-        <input id="pro-color" type="color" value="#c9a96e" />
-        <button class="btn-primary" type="submit">Salvar</button>
-        <button class="btn-secondary" type="button" onclick="clearProfessionalForm()">Cancelar</button>
-      </form>
-      <div id="admin-pro-list" class="admin-list"></div>
-    </section>
+  <section class="admin-content" id="admin-profissionais">
+    <div class="admin-section-header"><h3>Profissionais</h3></div>
+    <div class="admin-form">
+      <input type="hidden" id="pro-id"/>
+      <input id="pro-name" placeholder="Nome" required/>
+      <input id="pro-role" placeholder="Especialidade" required/>
+      <input id="pro-emoji" placeholder="Emoji ou iniciais" maxlength="4"/>
+      <input id="pro-color" type="color" value="#c9a96e"/>
+      <button class="btn-primary" type="button" onclick="saveProfessional()">Salvar</button>
+      <button class="btn-secondary" type="button" onclick="clearProfessionalForm()">Cancelar</button>
+    </div>
+    <div id="admin-pro-list" class="admin-list"></div>
+  </section>
 
-    <section class="admin-content" id="admin-servicos">
-      <div class="admin-section-header"><h3>Serviços</h3></div>
-      <form class="admin-form" onsubmit="saveService(event)">
-        <input type="hidden" id="svc-id" />
-        <input id="svc-name" placeholder="Nome do serviço" required />
-        <input id="svc-emoji" placeholder="Emoji" maxlength="4" />
-        <input id="svc-duration" type="number" min="10" step="5" placeholder="Duração em minutos" required />
-        <input id="svc-price" type="number" min="0" step="1" placeholder="Preço R$" required />
-        <select id="svc-category" required>
-          <option value="feminino">Feminino</option>
-          <option value="masculino">Masculino</option>
-          <option value="unissex">Unissex</option>
-          <option value="estetica">Estética</option>
-        </select>
-        <button class="btn-primary" type="submit">Salvar</button>
-        <button class="btn-secondary" type="button" onclick="clearServiceForm()">Cancelar</button>
-      </form>
-      <div id="admin-service-list" class="admin-list"></div>
-    </section>
+  <section class="admin-content" id="admin-servicos">
+    <div class="admin-section-header"><h3>Serviços</h3></div>
+    <div class="admin-form">
+      <input type="hidden" id="svc-id"/>
+      <input id="svc-name" placeholder="Nome do serviço" required/>
+      <input id="svc-emoji" placeholder="Emoji" maxlength="4"/>
+      <input id="svc-duration" type="number" min="10" step="5" placeholder="Duração em minutos" required/>
+      <input id="svc-price" type="number" min="0" step="1" placeholder="Preço R$" required/>
+      <select id="svc-category" required>
+        <option value="feminino">Feminino</option>
+        <option value="masculino">Masculino</option>
+        <option value="unissex">Unissex</option>
+        <option value="estetica">Estética</option>
+      </select>
+      <button class="btn-primary" type="button" onclick="saveService()">Salvar</button>
+      <button class="btn-secondary" type="button" onclick="clearServiceForm()">Cancelar</button>
+    </div>
+    <div id="admin-service-list" class="admin-list"></div>
+  </section>
 
-    <section class="admin-content" id="admin-config">
-      <div class="admin-section-header"><h3>Configurações do Salão</h3></div>
-      <form class="admin-form config-form" onsubmit="saveSettings(event)">
-        <label>WhatsApp do salão
-          <input id="cfg-phone" placeholder="Ex: 5583999999999" />
-        </label>
-        <label>Abertura
-          <input id="cfg-open" type="time" required />
-        </label>
-        <label>Fechamento
-          <input id="cfg-close" type="time" required />
-        </label>
-        <label>Intervalo entre horários
-          <input id="cfg-slot" type="number" min="10" step="5" required />
-        </label>
-        <label>Início da pausa
-          <input id="cfg-break-start" type="time" />
-        </label>
-        <label>Fim da pausa
-          <input id="cfg-break-end" type="time" />
-        </label>
-        <fieldset class="weekdays">
-          <legend>Dias de funcionamento</legend>
-          <label><input type="checkbox" value="1" name="workday" />Seg</label>
-          <label><input type="checkbox" value="2" name="workday" />Ter</label>
-          <label><input type="checkbox" value="3" name="workday" />Qua</label>
-          <label><input type="checkbox" value="4" name="workday" />Qui</label>
-          <label><input type="checkbox" value="5" name="workday" />Sex</label>
-          <label><input type="checkbox" value="6" name="workday" />Sáb</label>
-          <label><input type="checkbox" value="0" name="workday" />Dom</label>
-        </fieldset>
-        <button class="btn-primary" type="submit">Salvar Configurações</button>
-      </form>
-      <div class="danger-zone">
-        <h4>⚠ Zona de risco</h4>
-        <button class="btn-danger" type="button" onclick="clearAllBookings()">Limpar todos os agendamentos</button>
-        <button class="btn-danger ghost" type="button" onclick="resetToDefaults()">Restaurar dados padrão</button>
-      </div>
-    </section>
-  </aside>
+  <section class="admin-content" id="admin-config">
+    <div class="admin-section-header"><h3>Configurações do Salão</h3></div>
+    <div class="admin-form config-form">
+      <label>WhatsApp do salão
+        <input id="cfg-phone" placeholder="Ex: 5583999999999"/>
+      </label>
+      <label>Abertura
+        <input id="cfg-open" type="time" required/>
+      </label>
+      <label>Fechamento
+        <input id="cfg-close" type="time" required/>
+      </label>
+      <label>Intervalo entre horários (min)
+        <input id="cfg-slot" type="number" min="10" step="5" required/>
+      </label>
+      <label>Início da pausa
+        <input id="cfg-break-start" type="time"/>
+      </label>
+      <label>Fim da pausa
+        <input id="cfg-break-end" type="time"/>
+      </label>
+      <fieldset class="weekdays">
+        <legend>Dias de funcionamento</legend>
+        <label><input type="checkbox" value="1" name="workday"/>Seg</label>
+        <label><input type="checkbox" value="2" name="workday"/>Ter</label>
+        <label><input type="checkbox" value="3" name="workday"/>Qua</label>
+        <label><input type="checkbox" value="4" name="workday"/>Qui</label>
+        <label><input type="checkbox" value="5" name="workday"/>Sex</label>
+        <label><input type="checkbox" value="6" name="workday"/>Sáb</label>
+        <label><input type="checkbox" value="0" name="workday"/>Dom</label>
+      </fieldset>
+      <button class="btn-primary" type="button" onclick="saveSettings()">Salvar Configurações</button>
+    </div>
+    <div class="danger-zone">
+      <h4>⚠ Zona de risco</h4>
+      <button class="btn-danger" type="button" onclick="clearAllBookings()">Limpar todos os agendamentos</button>
+      <button class="btn-danger ghost" type="button" onclick="resetToDefaults()">Restaurar dados padrão</button>
+    </div>
+  </section>
+</aside>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-  <script src="config.js"></script>
-  <script src="app.js"></script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="admin.js"></script>
 </body>
 </html>

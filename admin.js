@@ -1,384 +1,303 @@
 // ============================================================
-// ADMIN.JS — Admin panel logic
-// ============================================================
-
-// ============================================================
-// ADMIN PANEL OPEN/CLOSE
+//  admin.js – Painel administrativo
 // ============================================================
 
 function openAdmin() {
   const panel = document.getElementById("admin-panel");
-  panel.classList.remove("hidden");
+  if (panel) panel.classList.remove("hidden");
   switchAdminTab("agenda");
-  renderAdminAgenda();
-  renderAdminProfessionals();
-  renderAdminServices();
-  populateAdminProFilter();
-  loadConfig();
 }
 
 function closeAdmin() {
-  document.getElementById("admin-panel").classList.add("hidden");
+  const panel = document.getElementById("admin-panel");
+  if (panel) panel.classList.add("hidden");
 }
 
-// ============================================================
-// ADMIN TABS
-// ============================================================
-
+// ── Tabs ──────────────────────────────────────────────────────
 function switchAdminTab(tab) {
   document.querySelectorAll(".admin-tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".admin-content").forEach(c => c.classList.remove("active"));
-  document.getElementById(`tab-${tab}`).classList.add("active");
-  document.getElementById(`admin-${tab}`).classList.add("active");
+
+  const btn = document.getElementById(`tab-${tab}`);
+  if (btn) btn.classList.add("active");
+  const content = document.getElementById(`admin-${tab}`);
+  if (content) content.classList.add("active");
+
+  if (tab === "agenda")       renderAdminAgenda();
+  if (tab === "profissionais") renderAdminPros();
+  if (tab === "servicos")      renderAdminServices();
+  if (tab === "config")        renderAdminConfig();
 }
 
-// ============================================================
-// AGENDA TAB
-// ============================================================
-
-function populateAdminProFilter() {
-  const sel = document.getElementById("admin-pro-filter");
-  const pros = DB.professionals.filter(p => p.active);
-  sel.innerHTML = '<option value="">Todos os profissionais</option>' +
-    pros.map(p => `<option value="${p.id}">${p.name}</option>`).join("");
-}
-
+// ── Agenda ────────────────────────────────────────────────────
 function renderAdminAgenda() {
-  const dateVal = document.getElementById("admin-date-filter")?.value || "";
-  const proVal  = document.getElementById("admin-pro-filter")?.value  || "";
-
-  let bookings = [...DB.bookings];
-  if (dateVal) bookings = bookings.filter(b => b.date === dateVal);
-  if (proVal)  bookings = bookings.filter(b => b.professionalId === proVal);
-
-  // Sort by time
-  bookings.sort((a, b) => a.time.localeCompare(b.time));
-
-  const list = document.getElementById("admin-agenda-list");
+  const list   = document.getElementById("admin-agenda-list");
+  const filter = document.getElementById("admin-date-filter");
+  const proSel = document.getElementById("admin-pro-filter");
   if (!list) return;
 
-  if (!bookings.length) {
-    list.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📅</div>
-        <h4>Nenhum agendamento encontrado</h4>
-        <p>Tente outro filtro ou data</p>
-      </div>`;
-    return;
+  const bookings = getBookings();
+  const pros     = getProfessionals();
+
+  // Popula filtro de profissional
+  if (proSel && proSel.options.length === 0) {
+    proSel.innerHTML = '<option value="">Todos os profissionais</option>' +
+      pros.map(p => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join("");
   }
 
-  list.innerHTML = bookings.map(b => {
-    const statusClass = b.status === "done" ? "status-done" : b.status === "cancelled" ? "status-cancelled" : "";
-    const statusBadge = b.status === "done"
-      ? '<span class="status-badge status-done-badge">Concluído</span>'
-      : b.status === "cancelled"
-      ? '<span class="status-badge status-cancelled-badge">Cancelado</span>'
-      : '';
+  let filtered = bookings.filter(b => b.status !== "deleted");
+  if (filter && filter.value) filtered = filtered.filter(b => b.date === filter.value);
+  if (proSel && proSel.value) filtered = filtered.filter(b => b.professionalId === proSel.value);
 
-    const h = Math.floor(b.duration / 60);
-    const m = b.duration % 60;
-    const durStr = h > 0 ? (m > 0 ? `${h}h${m}min` : `${h}h`) : `${m}min`;
+  filtered.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
 
-    const dateObj = new Date(b.date + "T00:00:00");
-    const dateStr = dateObj.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+  if (!filtered.length) { list.innerHTML = '<p class="muted" style="padding:16px">Nenhum agendamento encontrado.</p>'; return; }
 
-    return `
-      <div class="admin-booking-card ${statusClass}" id="bk-card-${b.id}">
-        <div class="admin-booking-time">${b.time}</div>
-        <div class="admin-booking-info">
-          <div class="admin-booking-client">
-            ${b.clientName} ${statusBadge}
-          </div>
-          <div class="admin-booking-details">
-            ${b.serviceName} · ${durStr} · <strong style="color:var(--gold);cursor:pointer" onclick="editBookingPrice('${b.id}')" title="Editar valor do agendamento">R$ ${b.price} ✏️</strong> · ${b.professionalName}
-            ${!document.getElementById("admin-date-filter")?.value ? ` · ${dateStr}` : ''}
-            ${b.clientPhone ? ` · <a href="https://wa.me/${b.clientPhone.replace(/\D/g,'')}" target="_blank" style="color:var(--gold);text-decoration:none">📱 ${b.clientPhone}</a>` : ''}
-            ${b.notes ? `<br>📝 ${b.notes}` : ''}
-          </div>
-        </div>
-        <div class="admin-booking-actions">
-          ${b.status !== "done" && b.status !== "cancelled" ? `
-            <button class="btn-done" title="Marcar como concluído" onclick="updateBookingStatus('${b.id}','done')">✓</button>
-            <button class="btn-cancel-booking" title="Cancelar" onclick="updateBookingStatus('${b.id}','cancelled')">✕</button>
-          ` : `
-            <button class="btn-edit" onclick="updateBookingStatus('${b.id}','confirmed')">↩</button>
-          `}
-        </div>
-      </div>`;
-  }).join("");
-}
-
-function editBookingPrice(id) {
-  const b = DB.bookings.find(x => x.id === id);
-  if (!b) return;
-  const newPrice = prompt(`Editar valor do agendamento de ${b.clientName}:\nServiço: ${b.serviceName}`, b.price);
-  if (newPrice === null) return;
-  const parsed = parseFloat(newPrice);
-  if (isNaN(parsed) || parsed < 0) {
-    showToast("Valor inválido!", "error");
-    return;
-  }
-  b.price = parsed;
-  saveData(DB);
-  renderAdminAgenda();
-  showToast("Valor do agendamento atualizado!", "success");
-}
-
-function updateBookingStatus(id, status) {
-  const idx = DB.bookings.findIndex(b => b.id === id);
-  if (idx < 0) return;
-  DB.bookings[idx].status = status;
-  saveData(DB);
-  renderAdminAgenda();
-  const labels = { done: "Marcado como concluído", cancelled: "Agendamento cancelado", confirmed: "Agendamento restaurado" };
-  showToast(labels[status] || "Atualizado", "success");
-}
-
-// ============================================================
-// PROFESSIONALS TAB
-// ============================================================
-
-let editingProId = null;
-
-function renderAdminProfessionals() {
-  const list = document.getElementById("admin-pro-list");
-  if (!list) return;
-  const pros = DB.professionals;
-
-  if (!pros.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">👥</div><h4>Nenhum profissional</h4><p>Adicione o primeiro profissional</p></div>`;
-    return;
-  }
-
-  list.innerHTML = pros.map(p => `
-    <div class="admin-item-card" id="pro-item-${p.id}">
-      <div class="admin-item-icon" style="background:${p.color}22; border: 1px solid ${p.color}44">
-        <span style="font-size:20px">${p.emoji}</span>
+  list.innerHTML = filtered.map(b => `
+    <div class="agenda-item ${b.status === 'cancelled' ? 'cancelled' : ''}">
+      <div class="agenda-main">
+        <span class="agenda-time">${b.time} · ${formatDateBR2(b.date)}</span>
+        <strong>${escapeHtml(b.clientName)}</strong>
+        <span>${escapeHtml(b.serviceName)} · ${escapeHtml(b.professionalName)}</span>
+        ${b.notes ? `<span class="agenda-notes">📝 ${escapeHtml(b.notes)}</span>` : ""}
       </div>
-      <div class="admin-item-info">
-        <h4>${p.name} ${!p.active ? '<span style="color:var(--white-dim);font-size:11px">(Inativo)</span>' : ''}</h4>
-        <p>${p.role}</p>
-      </div>
-      <div class="admin-item-actions">
-        <button class="btn-edit" onclick="openProForm('${p.id}')">✏</button>
-        <button class="btn-delete" onclick="deletePro('${p.id}')">🗑</button>
+      <div class="agenda-actions">
+        <span class="badge badge-${b.status}">${statusLabel(b.status)}</span>
+        ${b.status !== "cancelled"
+          ? `<button class="btn-sm btn-danger" type="button" onclick="cancelBooking('${b.id}')">Cancelar</button>`
+          : `<button class="btn-sm btn-secondary" type="button" onclick="restoreBooking('${b.id}')">Restaurar</button>`}
+        <button class="btn-sm btn-danger ghost" type="button" onclick="deleteBooking('${b.id}')">🗑</button>
       </div>
     </div>`).join("");
 }
 
-function openProForm(id) {
-  const box = document.getElementById("pro-form-box");
-  box.classList.remove("hidden");
-  editingProId = id || null;
+function statusLabel(s) {
+  return s === "confirmed" ? "Confirmado" : s === "cancelled" ? "Cancelado" : s;
+}
 
+function formatDateBR2(dateStr) {
+  if (!dateStr) return "";
+  const [y, m, d] = dateStr.split("-").map(Number);
+  return `${String(d).padStart(2,"0")}/${String(m).padStart(2,"0")}/${y}`;
+}
+
+function cancelBooking(id) {
+  const bks = getBookings();
+  const i   = bks.findIndex(b => b.id === id);
+  if (i >= 0) { bks[i].status = "cancelled"; saveBookingsData(bks); }
+  renderAdminAgenda();
+  showToast("Agendamento cancelado.");
+}
+
+function restoreBooking(id) {
+  const bks = getBookings();
+  const i   = bks.findIndex(b => b.id === id);
+  if (i >= 0) { bks[i].status = "confirmed"; saveBookingsData(bks); }
+  renderAdminAgenda();
+  showToast("Agendamento restaurado.");
+}
+
+function deleteBooking(id) {
+  if (!confirm("Excluir permanentemente este agendamento?")) return;
+  const bks = getBookings().filter(b => b.id !== id);
+  saveBookingsData(bks);
+  renderAdminAgenda();
+  showToast("Agendamento excluído.");
+}
+
+function exportBookingsCSV() {
+  const bks = getBookings();
+  const rows = [["ID","Data","Hora","Cliente","Telefone","Serviço","Profissional","Duração","Preço","Obs","Status","Criado em"]];
+  bks.forEach(b => rows.push([
+    b.id, b.date, b.time, b.clientName, b.clientPhone,
+    b.serviceName, b.professionalName, b.duration, b.price,
+    b.notes || "", b.status, b.createdAt || ""
+  ]));
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  a.href = url; a.download = "agendamentos.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function clearAllBookings() {
+  if (!confirm("Limpar TODOS os agendamentos? Esta ação não pode ser desfeita.")) return;
+  saveBookingsData([]);
+  renderAdminAgenda();
+  showToast("Todos os agendamentos foram removidos.");
+}
+
+// ── Profissionais ─────────────────────────────────────────────
+function renderAdminPros() {
+  const list = document.getElementById("admin-pro-list");
+  if (!list) return;
+  const pros = getProfessionals();
+  if (!pros.length) { list.innerHTML = '<p class="muted" style="padding:16px">Nenhum profissional cadastrado.</p>'; return; }
+  list.innerHTML = pros.map(p => `
+    <div class="admin-item">
+      <span class="pro-dot" style="background:${p.color || '#c9a96e'}">${p.emoji || "✂"}</span>
+      <div><strong>${escapeHtml(p.name)}</strong><span>${escapeHtml(p.role)}</span></div>
+      <div class="admin-item-actions">
+        <button class="btn-sm btn-secondary" type="button" onclick="editProfessional('${p.id}')">Editar</button>
+        <button class="btn-sm btn-danger ghost" type="button" onclick="deleteProfessional('${p.id}')">🗑</button>
+      </div>
+    </div>`).join("");
+}
+
+function editProfessional(id) {
+  const p = getProfessionals().find(p => p.id === id);
+  if (!p) return;
+  setValue("pro-id", p.id); setValue("pro-name", p.name);
+  setValue("pro-role", p.role); setValue("pro-emoji", p.emoji || "");
+  setValue("pro-color", p.color || "#c9a96e");
+  document.getElementById("pro-name")?.focus();
+}
+
+function saveProfessional() {
+  const id    = getValue("pro-id");
+  const name  = getValue("pro-name").trim();
+  const role  = getValue("pro-role").trim();
+  const emoji = getValue("pro-emoji").trim();
+  const color = getValue("pro-color");
+  if (!name || !role) { showToast("Nome e especialidade são obrigatórios."); return; }
+
+  const pros = getProfessionals();
   if (id) {
-    const p = DB.professionals.find(pr => pr.id === id);
-    document.getElementById("pro-form-title").textContent = "Editar Profissional";
-    document.getElementById("pro-name").value   = p.name;
-    document.getElementById("pro-role").value   = p.role;
-    document.getElementById("pro-emoji").value  = p.emoji;
-    document.getElementById("pro-color").value  = p.color;
+    const i = pros.findIndex(p => p.id === id);
+    if (i >= 0) Object.assign(pros[i], { name, role, emoji, color });
   } else {
-    document.getElementById("pro-form-title").textContent = "Novo Profissional";
-    document.getElementById("pro-name").value   = "";
-    document.getElementById("pro-role").value   = "";
-    document.getElementById("pro-emoji").value  = "💇";
-    document.getElementById("pro-color").value  = "#c9a96e";
+    pros.push({ id: "pro_" + Date.now(), name, role, emoji, color });
   }
-
-  box.scrollIntoView({ behavior: "smooth" });
+  saveProfessionalsData(pros);
+  clearProfessionalForm();
+  renderAdminPros();
+  showToast("Profissional salvo!");
 }
 
-function cancelProForm() {
-  document.getElementById("pro-form-box").classList.add("hidden");
-  editingProId = null;
+function deleteProfessional(id) {
+  if (!confirm("Excluir este profissional?")) return;
+  saveProfessionalsData(getProfessionals().filter(p => p.id !== id));
+  renderAdminPros();
+  showToast("Profissional removido.");
 }
 
-function savePro() {
-  const name  = document.getElementById("pro-name").value.trim();
-  const role  = document.getElementById("pro-role").value.trim();
-  const emoji = document.getElementById("pro-emoji").value.trim() || "💇";
-  const color = document.getElementById("pro-color").value;
-
-  if (!name) { showToast("Nome obrigatório", "error"); return; }
-
-  if (editingProId) {
-    const idx = DB.professionals.findIndex(p => p.id === editingProId);
-    if (idx >= 0) {
-      DB.professionals[idx] = { ...DB.professionals[idx], name, role, emoji, color };
-    }
-  } else {
-    DB.professionals.push({
-      id: "pro-" + Date.now(),
-      name, role, emoji, color, active: true
-    });
-  }
-
-  saveData(DB);
-  renderAdminProfessionals();
-  populateAdminProFilter();
-  cancelProForm();
-  showToast(editingProId ? "Profissional atualizado!" : "Profissional adicionado!", "success");
-  editingProId = null;
-  // Update public list too
-  renderProfessionals();
+function clearProfessionalForm() {
+  ["pro-id","pro-name","pro-role","pro-emoji"].forEach(id => setValue(id, ""));
+  setValue("pro-color", "#c9a96e");
 }
 
-function deletePro(id) {
-  if (!confirm("Remover este profissional?")) return;
-  DB.professionals = DB.professionals.filter(p => p.id !== id);
-  saveData(DB);
-  renderAdminProfessionals();
-  renderProfessionals();
-  showToast("Profissional removido", "info");
-}
-
-// ============================================================
-// SERVICES TAB
-// ============================================================
-
-let editingSvcId = null;
-
+// ── Serviços ──────────────────────────────────────────────────
 function renderAdminServices() {
   const list = document.getElementById("admin-service-list");
   if (!list) return;
-  const services = DB.services;
-
-  if (!services.length) {
-    list.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💈</div><h4>Nenhum serviço</h4><p>Adicione o primeiro serviço</p></div>`;
-    return;
-  }
-
-  const catColors = { feminino: "var(--pink)", masculino: "#6aaade", unissex: "var(--gold)", estetica: "#c87de8" };
-
-  list.innerHTML = services.map(s => {
-    const h = Math.floor(s.duration / 60);
-    const m = s.duration % 60;
-    const durStr = h > 0 ? (m > 0 ? `${h}h${m}min` : `${h}h`) : `${m}min`;
-    return `
-      <div class="admin-item-card" id="svc-item-${s.id}">
-        <div class="admin-item-icon">
-          <span style="font-size:20px">${s.emoji}</span>
-        </div>
-        <div class="admin-item-info">
-          <h4>${s.name}</h4>
-          <p style="color:${catColors[s.category]}">${s.category} · ${durStr} · R$ ${s.price}</p>
-        </div>
-        <div class="admin-item-actions">
-          <button class="btn-edit" onclick="openServiceForm('${s.id}')">✏</button>
-          <button class="btn-delete" onclick="deleteService('${s.id}')">🗑</button>
-        </div>
-      </div>`;
-  }).join("");
+  const svcs = getServices();
+  if (!svcs.length) { list.innerHTML = '<p class="muted" style="padding:16px">Nenhum serviço cadastrado.</p>'; return; }
+  list.innerHTML = svcs.map(s => `
+    <div class="admin-item">
+      <span style="font-size:1.4rem">${s.emoji || "✂️"}</span>
+      <div>
+        <strong>${escapeHtml(s.name)}</strong>
+        <span>${s.duration} min · R$ ${Number(s.price).toFixed(2).replace(".",",")} · ${s.category}</span>
+      </div>
+      <div class="admin-item-actions">
+        <button class="btn-sm btn-secondary" type="button" onclick="editService('${s.id}')">Editar</button>
+        <button class="btn-sm btn-danger ghost" type="button" onclick="deleteService('${s.id}')">🗑</button>
+      </div>
+    </div>`).join("");
 }
 
-function openServiceForm(id) {
-  const box = document.getElementById("service-form-box");
-  box.classList.remove("hidden");
-  editingSvcId = id || null;
-
-  if (id) {
-    const s = DB.services.find(sv => sv.id === id);
-    document.getElementById("service-form-title").textContent = "Editar Serviço";
-    document.getElementById("svc-name").value     = s.name;
-    document.getElementById("svc-emoji").value    = s.emoji;
-    document.getElementById("svc-duration").value = s.duration;
-    document.getElementById("svc-price").value    = s.price;
-    document.getElementById("svc-category").value = s.category;
-  } else {
-    document.getElementById("service-form-title").textContent = "Novo Serviço";
-    document.getElementById("svc-name").value     = "";
-    document.getElementById("svc-emoji").value    = "✂️";
-    document.getElementById("svc-duration").value = "60";
-    document.getElementById("svc-price").value    = "";
-    document.getElementById("svc-category").value = "unissex";
-  }
-
-  box.scrollIntoView({ behavior: "smooth" });
-}
-
-function cancelServiceForm() {
-  document.getElementById("service-form-box").classList.add("hidden");
-  editingSvcId = null;
+function editService(id) {
+  const s = getServices().find(s => s.id === id);
+  if (!s) return;
+  setValue("svc-id", s.id); setValue("svc-name", s.name);
+  setValue("svc-emoji", s.emoji || ""); setValue("svc-duration", s.duration);
+  setValue("svc-price", s.price); setValue("svc-category", s.category);
+  document.getElementById("svc-name")?.focus();
 }
 
 function saveService() {
-  const name     = document.getElementById("svc-name").value.trim();
-  const emoji    = document.getElementById("svc-emoji").value.trim() || "✂️";
-  const duration = parseInt(document.getElementById("svc-duration").value);
-  const price    = parseFloat(document.getElementById("svc-price").value);
-  const category = document.getElementById("svc-category").value;
+  const id       = getValue("svc-id");
+  const name     = getValue("svc-name").trim();
+  const emoji    = getValue("svc-emoji").trim();
+  const duration = parseInt(getValue("svc-duration"));
+  const price    = parseFloat(getValue("svc-price"));
+  const category = getValue("svc-category");
+  if (!name || isNaN(duration) || isNaN(price)) { showToast("Preencha todos os campos obrigatórios."); return; }
 
-  if (!name)           { showToast("Nome obrigatório", "error"); return; }
-  if (isNaN(duration)) { showToast("Duração inválida", "error"); return; }
-  if (isNaN(price))    { showToast("Preço inválido", "error"); return; }
-
-  if (editingSvcId) {
-    const idx = DB.services.findIndex(s => s.id === editingSvcId);
-    if (idx >= 0) DB.services[idx] = { ...DB.services[idx], name, emoji, duration, price, category };
+  const svcs = getServices();
+  if (id) {
+    const i = svcs.findIndex(s => s.id === id);
+    if (i >= 0) Object.assign(svcs[i], { name, emoji, duration, price, category });
   } else {
-    DB.services.push({
-      id: "svc-" + Date.now(),
-      name, emoji, duration, price, category
-    });
+    svcs.push({ id: "svc_" + Date.now(), name, emoji, duration, price, category });
   }
-
-  saveData(DB);
+  saveServicesData(svcs);
+  clearServiceForm();
   renderAdminServices();
-  cancelServiceForm();
-  showToast(editingSvcId ? "Serviço atualizado!" : "Serviço adicionado!", "success");
-  editingSvcId = null;
+  showToast("Serviço salvo!");
 }
 
 function deleteService(id) {
-  if (!confirm("Remover este serviço?")) return;
-  DB.services = DB.services.filter(s => s.id !== id);
-  saveData(DB);
+  if (!confirm("Excluir este serviço?")) return;
+  saveServicesData(getServices().filter(s => s.id !== id));
   renderAdminServices();
-  showToast("Serviço removido", "info");
+  showToast("Serviço removido.");
 }
 
-// ============================================================
-// CONFIG TAB
-// ============================================================
-
-const DAY_NAMES = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
-
-function loadConfig() {
-  const cfg = DB.salon;
-  document.getElementById("cfg-open").value  = cfg.openTime;
-  document.getElementById("cfg-close").value = cfg.closeTime;
-  document.getElementById("cfg-slot").value  = cfg.slotMinutes;
-  document.getElementById("cfg-break-start").value = cfg.breakStart || "12:00";
-  document.getElementById("cfg-break-end").value   = cfg.breakEnd   || "13:00";
-
-  // Days
-  const container = document.getElementById("days-check");
-  if (!container) return;
-  container.innerHTML = DAY_NAMES.map((d, i) => `
-    <button type="button" class="day-btn ${cfg.workDays.includes(i) ? 'active' : ''}"
-            id="day-btn-${i}" onclick="toggleDay(${i})">${d}</button>`).join("");
+function clearServiceForm() {
+  ["svc-id","svc-name","svc-emoji","svc-duration","svc-price"].forEach(id => setValue(id, ""));
+  setValue("svc-category", "feminino");
 }
 
-function toggleDay(i) {
-  const btn = document.getElementById(`day-btn-${i}`);
-  const idx = DB.salon.workDays.indexOf(i);
-  if (idx >= 0) {
-    DB.salon.workDays.splice(idx, 1);
-    btn.classList.remove("active");
-  } else {
-    DB.salon.workDays.push(i);
-    DB.salon.workDays.sort();
-    btn.classList.add("active");
-  }
+// ── Config ────────────────────────────────────────────────────
+function renderAdminConfig() {
+  const cfg = getConfig();
+  setValue("cfg-phone",       cfg.WHATSAPP_NUMBER || "");
+  setValue("cfg-open",        cfg.OPEN_TIME        || "08:00");
+  setValue("cfg-close",       cfg.CLOSE_TIME       || "19:00");
+  setValue("cfg-slot",        cfg.SLOT_MINUTES     || 30);
+  setValue("cfg-break-start", cfg.BREAK_START      || "");
+  setValue("cfg-break-end",   cfg.BREAK_END        || "");
+  document.querySelectorAll("input[name='workday']").forEach(cb => {
+    cb.checked = (cfg.WORK_DAYS || []).includes(parseInt(cb.value));
+  });
 }
 
-function saveConfig() {
-  DB.salon.openTime   = document.getElementById("cfg-open").value;
-  DB.salon.closeTime  = document.getElementById("cfg-close").value;
-  DB.salon.slotMinutes = parseInt(document.getElementById("cfg-slot").value) || 30;
-  DB.salon.breakStart = document.getElementById("cfg-break-start").value;
-  DB.salon.breakEnd   = document.getElementById("cfg-break-end").value;
-  saveData(DB);
-  showToast("Configurações salvas!", "success");
+function saveSettings() {
+  const workDays = Array.from(document.querySelectorAll("input[name='workday']:checked"))
+    .map(cb => parseInt(cb.value));
+
+  const cfg = Object.assign(getConfig(), {
+    WHATSAPP_NUMBER: getValue("cfg-phone").replace(/\D/g, ""),
+    OPEN_TIME:       getValue("cfg-open"),
+    CLOSE_TIME:      getValue("cfg-close"),
+    SLOT_MINUTES:    parseInt(getValue("cfg-slot")) || 30,
+    BREAK_START:     getValue("cfg-break-start") || "",
+    BREAK_END:       getValue("cfg-break-end")   || "",
+    WORK_DAYS:       workDays,
+  });
+  saveConfig(cfg);
+  showToast("Configurações salvas!");
+}
+
+function resetToDefaults() {
+  if (!confirm("Restaurar profissionais e serviços padrão? Os agendamentos serão mantidos.")) return;
+  localStorage.removeItem("jel_professionals");
+  localStorage.removeItem("jel_services");
+  localStorage.removeItem("jel_config");
+  renderAdminPros();
+  renderAdminServices();
+  renderAdminConfig();
+  showToast("Dados padrão restaurados.");
+}
+
+// ── Utilitários ───────────────────────────────────────────────
+function getValue(id) {
+  const el = document.getElementById(id);
+  return el ? el.value : "";
+}
+function setValue(id, v) {
+  const el = document.getElementById(id);
+  if (el) el.value = v;
 }
