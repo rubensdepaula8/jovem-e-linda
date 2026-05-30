@@ -1,23 +1,16 @@
 {
   "name": "Estúdio Jovem e Linda",
   "short_name": "Jovem e Linda",
-  "description": "Agende seu horário no Estúdio Jovem e Linda Unissex",
-  "start_url": "./index.html",
+  "description": "Agendamento online do Estúdio Jovem e Linda Unissex",
+  "start_url": "./",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#c9a96e",
-  "orientation": "portrait",
+  "background_color": "#0c0b0b",
+  "theme_color": "#111111",
   "icons": [
     {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
   ]

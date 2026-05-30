@@ -1,279 +1,239 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Estúdio Jovem e Linda – Agendamento Online</title>
-  <meta name="description" content="Agende seu horário no Estúdio Jovem e Linda Unissex de forma rápida e fácil. Escolha seu profissional, serviço e horário preferido." />
+  <meta name="description" content="Agende seu horário no Estúdio Jovem e Linda Unissex de forma rápida pelo celular." />
+  <meta name="theme-color" content="#111111" />
   <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-<!-- ===== SPLASH SCREEN ===== -->
-<div id="splash" class="splash">
-  <div class="splash-logo">
-    <img src="logo-izabel.png" alt="Logo Estúdio Jovem e Linda" class="logo-img-large" onerror="this.style.display='none'; document.getElementById('splash-fallback').style.display='flex';" />
-    <div id="splash-fallback" class="splash-fallback-box" style="display:none;">
-      <div class="splash-emblem">JL</div>
-      <div class="splash-scissors">✂</div>
-    </div>
-  </div>
-  <h1 class="splash-name">Estúdio Jovem e Linda</h1>
-  <p class="splash-sub">UNISSEX</p>
-  <div class="splash-bar"></div>
-</div>
-
-<!-- ===== APP CONTAINER ===== -->
-<div id="app" class="app hidden">
-
-  <!-- HEADER -->
-  <header class="app-header">
-    <div class="header-logo" id="header-logo-container">
-      <img id="header-logo-img" src="logo-izabel.png" alt="Logo" class="logo-img-small" onerror="this.src='logo-izabel.png';" />
-      <div class="logo-text">
-        <span class="logo-studio" id="header-logo-sub">ESTÚDIO</span>
-        <span class="logo-name" id="header-logo-title">Jovem e Linda</span>
-        <span class="logo-unissex" id="header-logo-extra">✂ UNISSEX</span>
-      </div>
-    </div>
-    <button class="btn-admin-access" id="btn-admin-header" onclick="openAdminLogin()">⚙</button>
-  </header>
-
-  <!-- STEP INDICATOR -->
-  <div class="step-indicator" id="step-indicator">
-    <div class="step active" data-step="1"><span>1</span><label>Profissional</label></div>
-    <div class="step-line"></div>
-    <div class="step" data-step="2"><span>2</span><label>Serviço</label></div>
-    <div class="step-line"></div>
-    <div class="step" data-step="3"><span>3</span><label>Data & Hora</label></div>
-    <div class="step-line"></div>
-    <div class="step" data-step="4"><span>4</span><label>Seus Dados</label></div>
+  <div id="splash" class="splash" aria-hidden="true">
+    <div class="brand-mark brand-mark-lg">JL</div>
+    <p>Preparando seu agendamento...</p>
   </div>
 
-  <!-- ===== STEP 1: PROFISSIONAL ===== -->
-  <section class="step-panel active" id="panel-1">
-    <div class="panel-header">
-      <h2>Escolha seu <span class="gold">profissional</span></h2>
-      <p>Todos especializados para deixar você incrível</p>
-    </div>
-    <div class="professionals-grid" id="professionals-grid"></div>
-  </section>
-
-  <!-- ===== STEP 2: SERVIÇO ===== -->
-  <section class="step-panel" id="panel-2">
-    <div class="panel-header">
-      <button class="btn-back" onclick="goToStep(1)">← Voltar</button>
-      <h2>Escolha o <span class="gold">serviço</span></h2>
-      <p id="services-subtitle">Com <strong id="selected-pro-name-s2"></strong></p>
-    </div>
-    <div class="services-list" id="services-list"></div>
-  </section>
-
-  <!-- ===== STEP 3: DATA & HORA ===== -->
-  <section class="step-panel" id="panel-3">
-    <div class="panel-header">
-      <button class="btn-back" onclick="goToStep(2)">← Voltar</button>
-      <h2>Escolha <span class="gold">data & horário</span></h2>
-      <p id="datetime-subtitle"></p>
-    </div>
-    <div class="calendar-container">
-      <div class="calendar-nav">
-        <button class="cal-nav-btn" id="prev-month" onclick="changeMonth(-1)">‹</button>
-        <span class="cal-month-label" id="cal-month-label"></span>
-        <button class="cal-nav-btn" id="next-month" onclick="changeMonth(1)">›</button>
+  <main id="app" class="app hidden">
+    <header class="hero">
+      <button class="admin-shortcut" type="button" onclick="openAdminLogin()" aria-label="Abrir painel administrativo">⚙</button>
+      <div class="brand-row">
+        <div class="brand-mark">JL</div>
+        <div>
+          <span class="eyebrow" id="header-subtitle">ESTÚDIO</span>
+          <h1 id="header-title">Jovem e Linda</h1>
+          <p id="header-extra">✂ UNISSEX</p>
+        </div>
       </div>
-      <div class="calendar-grid" id="calendar-grid"></div>
-    </div>
-    <div class="time-slots-container" id="time-slots-container">
-      <p class="time-slots-hint">← Selecione uma data para ver os horários</p>
-    </div>
-  </section>
+      <p class="hero-copy">Escolha o profissional, o serviço e o melhor horário para você.</p>
+    </header>
 
-  <!-- ===== STEP 4: DADOS DO CLIENTE ===== -->
-  <section class="step-panel" id="panel-4">
-    <div class="panel-header">
-      <button class="btn-back" onclick="goToStep(3)">← Voltar</button>
-      <h2>Seus <span class="gold">dados</span></h2>
-      <p>Quase lá! Só mais um passo ✨</p>
-    </div>
-    <div class="booking-summary-mini" id="booking-summary-mini"></div>
-    <form class="client-form" id="client-form" onsubmit="confirmBooking(event)">
-      <div class="form-group">
-        <label for="client-name">Seu nome completo</label>
-        <input type="text" id="client-name" placeholder="Ex: Maria Silva" required />
-      </div>
-      <div class="form-group">
-        <label for="client-phone">WhatsApp</label>
-        <input type="tel" id="client-phone" placeholder="(11) 99999-9999" required />
-      </div>
-      <div class="form-group">
-        <label for="client-notes">Observações (opcional)</label>
-        <textarea id="client-notes" placeholder="Ex: Quero cor com escova..."></textarea>
-      </div>
-      <button type="submit" class="btn-confirm" id="btn-confirm">
-        <span>Confirmar Agendamento</span>
-        <span class="btn-icon">✓</span>
-      </button>
-    </form>
-  </section>
+    <nav class="steps" id="step-indicator" aria-label="Etapas do agendamento">
+      <button class="step active" data-step="1" type="button" onclick="goToStep(1)"><span>1</span>Profissional</button>
+      <div class="step-line"></div>
+      <button class="step" data-step="2" type="button" onclick="goToStep(2)"><span>2</span>Serviço</button>
+      <div class="step-line"></div>
+      <button class="step" data-step="3" type="button" onclick="goToStep(3)"><span>3</span>Data & Hora</button>
+      <div class="step-line"></div>
+      <button class="step" data-step="4" type="button" onclick="goToStep(4)"><span>4</span>Seus Dados</button>
+    </nav>
 
-  <!-- ===== CONFIRMATION SCREEN ===== -->
-  <section class="step-panel" id="panel-confirm">
-    <div class="confirmation-screen">
-      <div class="confirm-check">✓</div>
-      <h2 class="confirm-title">Agendamento <span class="gold">Confirmado!</span></h2>
-      <p class="confirm-subtitle">Até logo, <strong id="confirm-client-name"></strong>!</p>
-      <div class="confirm-details" id="confirm-details"></div>
+    <section class="card step-panel active" id="panel-1">
+      <div class="panel-header">
+        <p class="eyebrow">Passo 1</p>
+        <h2>Escolha seu <span>profissional</span></h2>
+        <p>Todos especializados para deixar você incrível.</p>
+      </div>
+      <div class="professionals-grid" id="professionals-grid"></div>
+    </section>
+
+    <section class="card step-panel" id="panel-2">
+      <button class="btn-back" type="button" onclick="goToStep(1)">← Voltar</button>
+      <div class="panel-header">
+        <p class="eyebrow">Passo 2</p>
+        <h2>Escolha o <span>serviço</span></h2>
+        <p>Com <strong id="selected-pro-name-s2"></strong></p>
+      </div>
+      <div id="services-list" class="services-list"></div>
+    </section>
+
+    <section class="card step-panel" id="panel-3">
+      <button class="btn-back" type="button" onclick="goToStep(2)">← Voltar</button>
+      <div class="panel-header">
+        <p class="eyebrow">Passo 3</p>
+        <h2>Escolha <span>data & horário</span></h2>
+        <p id="datetime-subtitle"></p>
+      </div>
+      <div class="calendar-box">
+        <div class="calendar-top">
+          <button class="cal-nav-btn" type="button" onclick="changeMonth(-1)" aria-label="Mês anterior">‹</button>
+          <strong id="cal-month-label"></strong>
+          <button class="cal-nav-btn" type="button" onclick="changeMonth(1)" aria-label="Próximo mês">›</button>
+        </div>
+        <div class="calendar-grid" id="calendar-grid"></div>
+      </div>
+      <div class="time-slots-container" id="time-slots-container">
+        <p class="muted">← Selecione uma data para ver os horários</p>
+      </div>
+    </section>
+
+    <section class="card step-panel" id="panel-4">
+      <button class="btn-back" type="button" onclick="goToStep(3)">← Voltar</button>
+      <div class="panel-header">
+        <p class="eyebrow">Passo 4</p>
+        <h2>Seus <span>dados</span></h2>
+        <p>Quase lá! Só mais um passo ✨</p>
+      </div>
+      <div class="booking-summary-mini" id="booking-summary-mini"></div>
+      <form class="client-form" id="client-form" onsubmit="confirmBooking(event)">
+        <label>Seu nome completo
+          <input type="text" id="client-name" placeholder="Ex: Maria Silva" autocomplete="name" required />
+        </label>
+        <label>WhatsApp
+          <input type="tel" id="client-phone" placeholder="Ex: 83 99999-9999" autocomplete="tel" required />
+        </label>
+        <label>Observações <small>(opcional)</small>
+          <textarea id="client-notes" rows="3" placeholder="Ex: prefiro atendimento rápido, tenho alergia, etc."></textarea>
+        </label>
+        <button class="btn-primary" type="submit">Confirmar Agendamento ✓</button>
+      </form>
+    </section>
+
+    <section class="card step-panel confirm-panel" id="panel-confirm">
+      <div class="success-icon">✓</div>
+      <h2>Agendamento Confirmado!</h2>
+      <p>Até logo, <strong id="confirm-client-name"></strong>!</p>
+      <div id="confirm-details" class="confirm-details"></div>
       <div class="confirm-actions">
-        <button class="btn-whatsapp" id="btn-whatsapp" onclick="sendWhatsapp()">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Avisar pelo WhatsApp
-        </button>
-        <button class="btn-new-booking" onclick="startNewBooking()">+ Novo Agendamento</button>
+        <button class="btn-whatsapp" type="button" onclick="sendWhatsapp()">Avisar pelo WhatsApp</button>
+        <button class="btn-secondary" type="button" onclick="startNewBooking()">+ Novo Agendamento</button>
       </div>
-      <div class="qr-share-section">
-        <p class="share-hint">📲 Compartilhe o app com amigos</p>
-        <canvas id="qr-canvas" width="120" height="120"></canvas>
-        <p class="share-url" id="share-url"></p>
-      </div>
-    </div>
-  </section>
+      <p class="warning" id="whatsapp-warning"></p>
+    </section>
+  </main>
 
-</div><!-- end #app -->
-
-<!-- ===== ADMIN LOGIN MODAL ===== -->
-<div class="modal-overlay hidden" id="admin-login-modal">
-  <div class="modal-box">
-    <button class="modal-close" onclick="closeAdminLogin()">×</button>
-    <div class="modal-logo">⚙</div>
-    <h3>Acesso Administrativo</h3>
-    <p>Estúdio Jovem e Linda</p>
-    <div class="form-group">
-      <label for="admin-password">Senha</label>
-      <input type="password" id="admin-password" placeholder="••••••" onkeydown="if(event.key==='Enter')loginAdmin()" />
+  <div id="admin-login-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="admin-login-title">
+    <div class="modal-box">
+      <button class="modal-close" type="button" onclick="closeAdminLogin()" aria-label="Fechar">×</button>
+      <div class="brand-mark small">JL</div>
+      <h3 id="admin-login-title">Acesso Administrativo</h3>
+      <p class="muted">Digite a senha do painel.</p>
+      <label>Senha
+        <input type="password" id="admin-password" onkeydown="if(event.key==='Enter') loginAdmin()" />
+      </label>
+      <p class="form-error hidden" id="admin-error">Senha incorreta. Tente novamente.</p>
+      <button class="btn-primary full" type="button" onclick="loginAdmin()">Entrar</button>
     </div>
-    <p class="admin-error hidden" id="admin-error">Senha incorreta. Tente novamente.</p>
-    <button class="btn-confirm" onclick="loginAdmin()">Entrar</button>
   </div>
-</div>
 
-<!-- ===== ADMIN PANEL ===== -->
-<div class="admin-overlay hidden" id="admin-panel">
-  <div class="admin-container">
+  <aside id="admin-panel" class="admin-panel hidden" aria-label="Painel administrativo">
     <div class="admin-header">
-      <div class="logo-emblem small">JL</div>
-      <h2>Painel Admin</h2>
-      <button class="btn-admin-close" onclick="closeAdmin()">× Sair</button>
+      <div class="brand-row compact"><div class="brand-mark small">JL</div><h2>Painel Admin</h2></div>
+      <button class="btn-secondary" type="button" onclick="closeAdmin()">× Sair</button>
     </div>
 
-    <!-- Admin Tabs -->
     <div class="admin-tabs">
-      <button class="admin-tab active" id="tab-agenda" onclick="switchAdminTab('agenda')">📅 Agenda</button>
-      <button class="admin-tab" id="tab-profissionais" onclick="switchAdminTab('profissionais')">👥 Profissionais</button>
-      <button class="admin-tab" id="tab-servicos" onclick="switchAdminTab('servicos')">💈 Serviços</button>
-      <button class="admin-tab" id="tab-config" onclick="switchAdminTab('config')">⚙ Config</button>
+      <button class="admin-tab active" id="tab-agenda" type="button" onclick="switchAdminTab('agenda')">Agenda</button>
+      <button class="admin-tab" id="tab-profissionais" type="button" onclick="switchAdminTab('profissionais')">Profissionais</button>
+      <button class="admin-tab" id="tab-servicos" type="button" onclick="switchAdminTab('servicos')">Serviços</button>
+      <button class="admin-tab" id="tab-config" type="button" onclick="switchAdminTab('config')">Config</button>
     </div>
 
-    <!-- Tab: Agenda -->
-    <div class="admin-content active" id="admin-agenda">
+    <section class="admin-content active" id="admin-agenda">
       <div class="admin-section-header">
         <h3>Agendamentos</h3>
         <div class="agenda-filters">
           <input type="date" id="admin-date-filter" onchange="renderAdminAgenda()" />
-          <select id="admin-pro-filter" onchange="renderAdminAgenda()">
-            <option value="">Todos os profissionais</option>
-          </select>
+          <select id="admin-pro-filter" onchange="renderAdminAgenda()"></select>
+          <button type="button" class="btn-secondary" onclick="exportBookingsCSV()">Exportar CSV</button>
         </div>
       </div>
-      <div id="admin-agenda-list"></div>
-    </div>
+      <div id="admin-agenda-list" class="admin-list"></div>
+    </section>
 
-    <!-- Tab: Profissionais -->
-    <div class="admin-content" id="admin-profissionais">
-      <div class="admin-section-header">
-        <h3>Profissionais</h3>
-        <button class="btn-add" onclick="openProForm()">+ Adicionar</button>
-      </div>
-      <div id="admin-pro-list"></div>
-      <div class="admin-form-box hidden" id="pro-form-box">
-        <h4 id="pro-form-title">Novo Profissional</h4>
-        <div class="form-group"><label>Nome</label><input type="text" id="pro-name" placeholder="Nome do profissional" /></div>
-        <div class="form-group"><label>Especialidade</label><input type="text" id="pro-role" placeholder="Ex: Colorista, Cabeleireiro" /></div>
-        <div class="form-group"><label>Emoji / Inicial</label><input type="text" id="pro-emoji" placeholder="Ex: 💇‍♀️ ou A" maxlength="4" /></div>
-        <div class="form-group"><label>Cor (hex)</label><input type="color" id="pro-color" value="#c9a96e" /></div>
-        <div class="form-row">
-          <button class="btn-confirm" onclick="savePro()">Salvar</button>
-          <button class="btn-cancel" onclick="cancelProForm()">Cancelar</button>
-        </div>
-      </div>
-    </div>
+    <section class="admin-content" id="admin-profissionais">
+      <div class="admin-section-header"><h3>Profissionais</h3></div>
+      <form class="admin-form" onsubmit="saveProfessional(event)">
+        <input type="hidden" id="pro-id" />
+        <input id="pro-name" placeholder="Nome" required />
+        <input id="pro-role" placeholder="Especialidade" required />
+        <input id="pro-emoji" placeholder="Emoji ou iniciais" maxlength="4" />
+        <input id="pro-color" type="color" value="#c9a96e" />
+        <button class="btn-primary" type="submit">Salvar</button>
+        <button class="btn-secondary" type="button" onclick="clearProfessionalForm()">Cancelar</button>
+      </form>
+      <div id="admin-pro-list" class="admin-list"></div>
+    </section>
 
-    <!-- Tab: Serviços -->
-    <div class="admin-content" id="admin-servicos">
-      <div class="admin-section-header">
-        <h3>Serviços</h3>
-        <button class="btn-add" onclick="openServiceForm()">+ Adicionar</button>
-      </div>
-      <div id="admin-service-list"></div>
-      <div class="admin-form-box hidden" id="service-form-box">
-        <h4 id="service-form-title">Novo Serviço</h4>
-        <div class="form-group"><label>Nome do serviço</label><input type="text" id="svc-name" placeholder="Ex: Corte Feminino" /></div>
-        <div class="form-group"><label>Emoji</label><input type="text" id="svc-emoji" placeholder="Ex: ✂️" maxlength="4" /></div>
-        <div class="form-group"><label>Duração (minutos)</label><input type="number" id="svc-duration" placeholder="Ex: 60" min="15" step="15" /></div>
-        <div class="form-group"><label>Preço (R$)</label><input type="number" id="svc-price" placeholder="Ex: 80" min="0" /></div>
-        <div class="form-group"><label>Categoria</label>
-          <select id="svc-category">
-            <option value="feminino">Feminino</option>
-            <option value="masculino">Masculino</option>
-            <option value="unissex">Unissex</option>
-            <option value="estetica">Estética</option>
-          </select>
-        </div>
-        <div class="form-row">
-          <button class="btn-confirm" onclick="saveService()">Salvar</button>
-          <button class="btn-cancel" onclick="cancelServiceForm()">Cancelar</button>
-        </div>
-      </div>
-    </div>
+    <section class="admin-content" id="admin-servicos">
+      <div class="admin-section-header"><h3>Serviços</h3></div>
+      <form class="admin-form" onsubmit="saveService(event)">
+        <input type="hidden" id="svc-id" />
+        <input id="svc-name" placeholder="Nome do serviço" required />
+        <input id="svc-emoji" placeholder="Emoji" maxlength="4" />
+        <input id="svc-duration" type="number" min="10" step="5" placeholder="Duração em minutos" required />
+        <input id="svc-price" type="number" min="0" step="1" placeholder="Preço R$" required />
+        <select id="svc-category" required>
+          <option value="feminino">Feminino</option>
+          <option value="masculino">Masculino</option>
+          <option value="unissex">Unissex</option>
+          <option value="estetica">Estética</option>
+        </select>
+        <button class="btn-primary" type="submit">Salvar</button>
+        <button class="btn-secondary" type="button" onclick="clearServiceForm()">Cancelar</button>
+      </form>
+      <div id="admin-service-list" class="admin-list"></div>
+    </section>
 
-    <!-- Tab: Config -->
-    <div class="admin-content" id="admin-config">
-      <h3>Configurações do Salão</h3>
-      <div class="config-section">
-        <h4>Horário de Funcionamento</h4>
-        <div class="form-row">
-          <div class="form-group"><label>Abertura</label><input type="time" id="cfg-open" value="09:00" /></div>
-          <div class="form-group"><label>Fechamento</label><input type="time" id="cfg-close" value="19:00" /></div>
-        </div>
-        <div class="form-group"><label>Intervalo entre horários (min)</label><input type="number" id="cfg-slot" value="30" min="15" step="15" /></div>
-        <h4>Dias de Funcionamento</h4>
-        <div class="days-check" id="days-check"></div>
-        <h4>Pausa / Almoço</h4>
-        <div class="form-row">
-          <div class="form-group"><label>Início pausa</label><input type="time" id="cfg-break-start" value="12:00" /></div>
-          <div class="form-group"><label>Fim pausa</label><input type="time" id="cfg-break-end" value="13:00" /></div>
-        </div>
+    <section class="admin-content" id="admin-config">
+      <div class="admin-section-header"><h3>Configurações do Salão</h3></div>
+      <form class="admin-form config-form" onsubmit="saveSettings(event)">
+        <label>WhatsApp do salão
+          <input id="cfg-phone" placeholder="Ex: 5583999999999" />
+        </label>
+        <label>Abertura
+          <input id="cfg-open" type="time" required />
+        </label>
+        <label>Fechamento
+          <input id="cfg-close" type="time" required />
+        </label>
+        <label>Intervalo entre horários
+          <input id="cfg-slot" type="number" min="10" step="5" required />
+        </label>
+        <label>Início da pausa
+          <input id="cfg-break-start" type="time" />
+        </label>
+        <label>Fim da pausa
+          <input id="cfg-break-end" type="time" />
+        </label>
+        <fieldset class="weekdays">
+          <legend>Dias de funcionamento</legend>
+          <label><input type="checkbox" value="1" name="workday" />Seg</label>
+          <label><input type="checkbox" value="2" name="workday" />Ter</label>
+          <label><input type="checkbox" value="3" name="workday" />Qua</label>
+          <label><input type="checkbox" value="4" name="workday" />Qui</label>
+          <label><input type="checkbox" value="5" name="workday" />Sex</label>
+          <label><input type="checkbox" value="6" name="workday" />Sáb</label>
+          <label><input type="checkbox" value="0" name="workday" />Dom</label>
+        </fieldset>
+        <button class="btn-primary" type="submit">Salvar Configurações</button>
+      </form>
+      <div class="danger-zone">
+        <h4>⚠ Zona de risco</h4>
+        <button class="btn-danger" type="button" onclick="clearAllBookings()">Limpar todos os agendamentos</button>
+        <button class="btn-danger ghost" type="button" onclick="resetToDefaults()">Restaurar dados padrão</button>
       </div>
-      <button class="btn-confirm" onclick="saveConfig()">Salvar Configurações</button>
-      <div class="config-section danger-zone">
-        <h4>⚠ Zona de Risco</h4>
-        <button class="btn-danger" onclick="clearAllBookings()">Limpar todos os agendamentos</button>
-        <button class="btn-danger" onclick="resetToDefaults()">Restaurar dados padrão</button>
-      </div>
-    </div>
+    </section>
+  </aside>
 
-  </div>
-</div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-<!-- Toast notification -->
-<div class="toast hidden" id="toast"></div>
-
-<script src="data.js"></script>
-<script src="app.js"></script>
-<script src="admin.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
