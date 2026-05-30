@@ -44,7 +44,6 @@
             font-weight: 300;
         }
 
-        /* Spinner de carregamento */
         .spinner {
             width: 40px;
             height: 40px;
@@ -59,30 +58,28 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Botão de segurança (fallback) */
-        .btn-fallback {
+        /* Botão para forçar a abertura do App */
+        .btn-action {
             display: inline-block;
-            padding: 12px 24px;
-            background-color: transparent;
-            color: #d4af37;
-            border: 1px solid #d4af37;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            opacity: 0; 
-            animation: fadeIn 1.5s forwards;
-            animation-delay: 2s; /* Aparece após 2 segundos se falhar */
-        }
-
-        .btn-fallback:hover {
+            padding: 14px 28px;
             background-color: #d4af37;
             color: #0b0b0b;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+            margin-top: 10px;
         }
 
-        @keyframes fadeIn {
-            to { opacity: 1; }
+        .btn-action:hover {
+            background-color: #f3cd46;
+            transform: translateY(-2px);
+        }
+
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -93,38 +90,33 @@
             <img src="logo.png" alt="Estúdio Jovem e Linda" class="logo">
         </div>
         
-        <div class="spinner" id="spinner"></div>
-        <p class="status-text" id="status">Abrindo o seu agendamento...</p>
-        
-        <a href="https://www.trinks.com/jovemelinda" class="btn-fallback" id="fallback-btn">
-            Clique aqui para agendar na Web
-        </a>
+        <div id="loading-area">
+            <div class="spinner"></div>
+            <p class="status-text">Abrindo o aplicativo de agendamento...</p>
+        </div>
+
+        <div id="error-area" class="hidden">
+            <p class="status-text">O seu navegador bloqueou a abertura automática.</p>
+            <a href="intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=com.trinks.trinksmobile;end" class="btn-action">
+                ABRIR NO APLICATIVO
+            </a>
+        </div>
     </div>
 
     <script>
-        // Configuração das URLs - Ajuste aqui se o nome final da URL do seu Trinks for diferente
-        const linkDoEstudio = "jovemelinda"; 
+        // Link de chamada direta do aplicativo Trinks (Android Intent)
+        const appUrl = "intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=com.trinks.trinksmobile;end";
 
-        const appUrl = `intent://www.trinks.com/${linkDoEstudio}#Intent;scheme=https;package=com.trinks.trinksmobile;end`;
-        const webUrl = `https://www.trinks.com/${linkDoEstudio}`;
-
-        function tentarRedirecionar() {
-            const tempoInicial = Date.now();
-            
-            // 1. Tenta forçar a abertura do aplicativo Trinks
+        function abrirAplicativo() {
+            // Tenta abrir o app imediatamente
             window.location.href = appUrl;
 
-            // 2. Se passar 2.5 segundos e a página continuar aberta, joga para o site correto
+            // Se o navegador travar a abertura e continuar na página após 2 segundos,
+            // nós escondemos o carregamento e mostramos o botão para o cliente clicar
             setTimeout(() => {
-                // Se o tempo decorrido for curto, significa que o usuário continuou na página (o app não abriu)
-                if (Date.now() - tempoInicial < 3000) {
-                    window.location.href = webUrl;
-                }
-            }, 2500);
+                document.getElementById('loading-area').classList.add('hidden');
+                document.getElementById('error-area').classList.remove('hidden');
+            }, 2000);
         }
 
-        // Executa a lógica assim que a página carrega
-        window.onload = tentarRedirecionar;
-    </script>
-</body>
-</html>
+        // Executa
