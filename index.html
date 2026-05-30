@@ -58,7 +58,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Botão para forçar a abertura do App */
         .btn-action {
             display: inline-block;
             padding: 14px 28px;
@@ -71,6 +70,7 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
             margin-top: 10px;
+            text-transform: uppercase;
         }
 
         .btn-action:hover {
@@ -97,30 +97,48 @@
 
         <div id="error-area" class="hidden">
             <p class="status-text">O seu navegador bloqueou a abertura automática.</p>
-            <a href="intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=com.trinks.trinksmobile;end" class="btn-action">
+            <!-- O botão agora chama a função corrigida via JavaScript -->
+            <a href="#" onclick="dispararApp(event)" class="btn-action">
                 ABRIR NO APLICATIVO
             </a>
         </div>
     </div>
 
     <script>
-        // Link de chamada direta do aplicativo Trinks (Android Intent)
-        const appUrl = "intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=com.trinks.trinksmobile;end";
+        // Link corrigido para abrir o aplicativo Trinks Cliente direto na página do estabelecimento
+        // O pacote correto do app de clientes na Play Store é "br.com.trinks.cliente"
+        const appUrlAndroid = "intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=br.com.trinks.cliente;end";
+        
+        // Link universal que o iPhone (iOS) usa para abrir o app direto se estiver instalado
+        const appUrlApple = "trinks://www.trinks.com/jovemelinda";
 
-        function abrirAplicativo() {
-            // Tenta abrir o app imediatamente
-            window.location.href = appUrl;
+        function obterLinkCorreto() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            // Se for iPhone/iPad retorna o link da Apple, senão retorna o do Android
+            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                return appUrlApple;
+            }
+            return appUrlAndroid;
+        }
 
-            // Se o navegador travar a abertura e continuar na página após 2 segundos,
-            // nós escondemos o carregamento e mostramos o botão para o cliente clicar
+        function dispararApp(e) {
+            if (e) e.preventDefault(); // Evita que a página recarregue ao clicar no botão
+            window.location.href = obterLinkCorreto();
+        }
+
+        function iniciarRedirecionamento() {
+            // Tenta abrir o aplicativo assim que entra na página
+            dispararApp();
+
+            // Se o navegador bloquear ou o app não responder em 2 segundos, mostra o botão na tela
             setTimeout(() => {
                 document.getElementById('loading-area').classList.add('hidden');
                 document.getElementById('error-area').classList.remove('hidden');
             }, 2000);
         }
 
-        // Executa assim que a página carrega
-        window.onload = abrirAplicativo;
+        // Executa ao carregar a página
+        window.onload = iniciarRedirecionamento;
     </script>
 </body>
 </html>
