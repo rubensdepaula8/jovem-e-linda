@@ -60,7 +60,7 @@ const DEFAULT_DATA = {
 // Storage helpers
 // ============================================================
 
-const STORAGE_KEY = "jl_salon_v1";
+const STORAGE_KEY = "jl_salon_v2";
 
 function loadData() {
   try {
