@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estúdio Jovem e Linda - Agendamento</title>
     <style>
-        /* (O estilo permanece igual ao anterior) */
         body {
             margin: 0;
             padding: 0;
@@ -105,13 +104,12 @@
     </div>
 
     <script>
-        // LINK WEB SIMPLES (não precisa de app instalado)
-        const appUrlAndroid = "https://www.trinks.com/jovemelinda";
-        const appUrlApple = "https://www.trinks.com/jovemelinda";
+        // LINK WEB Puro (não tem esquema de app)
+        const appUrl = "https://www.trinks.com/jovemelinda"; // Sem esquema trinks://
 
         function dispararApp(e) {
             if (e) e.preventDefault();
-            window.location.href = appUrlAndroid;
+            window.location.href = appUrl; // Abre diretamente no navegador
         }
 
         function iniciarRedirecionamento() {
