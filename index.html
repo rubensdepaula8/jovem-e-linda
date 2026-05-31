@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estúdio Jovem e Linda - Agendamento</title>
     <style>
+        /* (O estilo permanece igual ao anterior) */
         body {
             margin: 0;
             padding: 0;
@@ -104,20 +105,13 @@
     </div>
 
     <script>
-        const appUrlAndroid = "intent://www.trinks.com/jovemelinda#Intent;scheme=https;package=br.com.trinks.cliente;end";
-        const appUrlApple = "trinks://www.trinks.com/jovemelinda";
-
-        function obterLinkCorreto() {
-            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-            if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                return appUrlApple;
-            }
-            return appUrlAndroid;
-        }
+        // LINK WEB SIMPLES (não precisa de app instalado)
+        const appUrlAndroid = "https://www.trinks.com/jovemelinda";
+        const appUrlApple = "https://www.trinks.com/jovemelinda";
 
         function dispararApp(e) {
             if (e) e.preventDefault();
-            window.location.href = obterLinkCorreto();
+            window.location.href = appUrlAndroid;
         }
 
         function iniciarRedirecionamento() {
@@ -126,7 +120,7 @@
             setTimeout(() => {
                 document.getElementById('loading-area').classList.add('hidden');
                 document.getElementById('error-area').classList.remove('hidden');
-            }, 5000); // Alteração: 5 segundos em vez de 2
+            }, 5000);
         }
 
         window.onload = iniciarRedirecionamento;
